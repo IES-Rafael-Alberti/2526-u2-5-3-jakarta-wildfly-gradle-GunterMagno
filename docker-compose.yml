@@ -1,0 +1,28 @@
+services:
+  wildfly:
+    image: quay.io/wildfly/wildfly:latest
+    container_name: wildfly_backend
+    volumes:
+      - ./build/libs/crud-file.war:/opt/jboss/wildfly/standalone/deployments/crud-file.war
+    expose:
+      - "8080"
+    networks:
+      - red-interna
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - wildfly
+    networks:
+      - red-interna
+
+networks:
+  red-interna:
+    driver: bridge
